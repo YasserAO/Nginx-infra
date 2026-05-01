@@ -2,5 +2,4 @@
 # Format:
 # <subdomain.example.com> <docker-service-or-host>:<port>;
 
-api.vendra.cfd app:80;
-admin.vendra.cfd app:80;
+admin.vendra.cfd admin-panel:3000;
