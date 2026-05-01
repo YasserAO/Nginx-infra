@@ -3,7 +3,7 @@
 Production-oriented Nginx reverse proxy that:
 - runs in a container,
 - accepts public traffic on port 80/443,
-- routes requests by domain to other Docker containers,
+- routes requests by subdomain to different Docker containers/ports,
 - uses editable local volumes for config/logs,
 - supports quick config validation/reload,
 - limits container resources,
@@ -19,7 +19,7 @@ docker compose up -d
 
 Default behavior after startup:
 - Nginx listens on host ports `${HTTP_PORT}`/`${HTTPS_PORT}` from `.env`.
-- Requests for `SERVER_NAME` are proxied to `${UPSTREAM_HOST}:${UPSTREAM_PORT}`.
+- Requests are routed by `Host` header using `nginx/upstreams/hosts.map`.
 - A demo upstream container (`app`, using `traefik/whoami`) is included so it works instantly.
 
 ## 2) Configure your domain
@@ -32,22 +32,26 @@ Default behavior after startup:
 docker compose up -d
 ```
 
-## 3) Route to your real backend container
+## 3) Route different subdomains to different containers
 
-Edit `.env`:
+Edit `nginx/upstreams/hosts.map`:
 
-```env
-UPSTREAM_HOST=your-backend-service-name
-UPSTREAM_PORT=3000
+```nginx
+api.example.com api-service:3000;
+admin.example.com admin-service:8080;
+shop.example.com shop-service:80;
 ```
 
 Important:
-- `UPSTREAM_HOST` should be the Docker service/container name reachable on the `backend` network.
+- Left side is the incoming subdomain (`Host` header).
+- Right side is the target upstream in `host:port` format.
+- Upstream host should be a Docker service/container name reachable on the `backend` network.
 - If your app is in another compose project, connect it to `${COMPOSE_PROJECT_NAME}-backend` network.
 
 ## 4) Editable config volumes
 
 - Nginx template: `nginx/templates/default.conf.template`
+- Host map: `nginx/upstreams/hosts.map`
 - Certs mount: `nginx/certs/`
 - Logs: `nginx/logs/`
 - Cache: `nginx/cache/`

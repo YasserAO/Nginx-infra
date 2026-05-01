@@ -4,6 +4,11 @@ map $http_upgrade $connection_upgrade {
     '' close;
 }
 
+map $host $target_upstream {
+    default "";
+    include /etc/nginx/upstreams/hosts.map;
+}
+
 server {
     listen 80;
     listen [::]:80;
@@ -18,6 +23,10 @@ server {
     }
 
     location / {
+        if ($target_upstream = "") {
+            return 444;
+        }
+
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
@@ -31,7 +40,7 @@ server {
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
 
-        proxy_pass http://${UPSTREAM_HOST}:${UPSTREAM_PORT};
+        proxy_pass http://$target_upstream;
     }
 }
 

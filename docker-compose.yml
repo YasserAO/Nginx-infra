@@ -27,6 +27,7 @@ services:
       ERROR_LOG_LEVEL: ${ERROR_LOG_LEVEL}
     volumes:
       - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/upstreams:/etc/nginx/upstreams:ro
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./nginx/logs:/var/log/nginx
       - ./nginx/cache:/var/cache/nginx
