@@ -13,11 +13,25 @@ server {
     listen 80;
     listen [::]:80;
     server_name ${SERVER_NAME};
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name ${SERVER_NAME};
     client_max_body_size ${CLIENT_MAX_BODY_SIZE};
     keepalive_timeout ${KEEPALIVE_TIMEOUT};
     error_log /var/log/nginx/error.log ${ERROR_LOG_LEVEL};
     resolver 127.0.0.11 valid=30s ipv6=off;
     resolver_timeout 5s;
+    ssl_certificate /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_tickets off;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
 
     location = /healthz {
         add_header Content-Type text/plain;
@@ -50,5 +64,14 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
+    return 444;
+}
+
+server {
+    listen 443 ssl default_server;
+    listen [::]:443 ssl default_server;
+    server_name _;
+    ssl_certificate /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
     return 444;
 }
