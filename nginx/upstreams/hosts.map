@@ -1,5 +1,15 @@
 # One entry per subdomain -> upstream host:port
 # Format:
 # <subdomain.example.com> <docker-service-or-host>:<port>;
+#
+# Docker container on the same Docker network:
+# api.example.com api-service:3000;
+#
+# Service running directly on the VPS host, outside Docker:
+# Requires docker-compose.yml extra_hosts:
+#   host.docker.internal:host-gateway
+# The host service must listen on 0.0.0.0:<port> or the Docker bridge/gateway,
+# not only on 127.0.0.1.
+# panel.example.com host.docker.internal:8080;
 
 admin.vendra.cfd admin-panel:3000;

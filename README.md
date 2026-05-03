@@ -47,6 +47,9 @@ Important:
 - Right side is the target upstream in `host:port` format.
 - Upstream host should be a Docker service/container name reachable on the `backend` network.
 - If your app is in another compose project, connect it to `${COMPOSE_PROJECT_NAME}-backend` network.
+- To route to a service running directly on the VPS host, use `host.docker.internal:<port>` in the map.
+  The included `docker-compose.yml` maps `host.docker.internal` to Docker's `host-gateway`.
+  The host service must listen on `0.0.0.0:<port>` or the Docker bridge/gateway address, not only `127.0.0.1`.
 
 ## 4) Editable config volumes
 
